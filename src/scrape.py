@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-class ScrapeQuotes: 
+class ScrapeQuotes:
     def __init__(self):
         self.url = "http://quotes.toscrape.com/"
         self.driver = None
