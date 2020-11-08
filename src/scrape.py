@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+
 class ScrapeQuotes: 
     def __init__(self):
         self.url = "http://quotes.toscrape.com/"
