@@ -1,15 +1,13 @@
-import requests
 import time
-import numpy as np
+
 import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+
 
 class ScrapeQuotes: 
-
     def __init__(self):
         self.url = "http://quotes.toscrape.com/"
         self.driver = self._init_driver()
@@ -43,7 +41,6 @@ class ScrapeQuotes:
         Returns false if its the last page of the website.
         """
         try:
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "next")))
             next_button = self.driver.find_element_by_class_name("next")
         except Exception:
             print("not found")
@@ -68,17 +65,14 @@ class ScrapeQuotes:
         """
         Scrape all quotes from the current page and store it on self.data
         """
-
         soup = self._get_soup_content(self.url)
         for quote in soup.find_all("div", "quote"):
-
             text = quote.find("span", itemprop="text").text
             author = quote.find("small", "author").text
             tags = [tag.text for tag in quote.find_all("a", class_="tag")]
             author_about = (
                 "http://quotes.toscrape.com" + quote.find("a", text="(about)")['href']
             )
-            
             row = pd.Series([author, text, tags, author_about, self._is_top_tag(tags)])
             self.data = self.data.append(row, ignore_index=True)
 
