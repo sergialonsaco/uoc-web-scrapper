@@ -10,7 +10,7 @@ from selenium.webdriver.chrome.options import Options
 class ScrapeQuotes: 
     def __init__(self):
         self.url = "http://quotes.toscrape.com/"
-        self.driver = self._init_driver()
+        self.driver = None
         self.data = pd.DataFrame()
         self.top_tags = []
 
@@ -20,8 +20,7 @@ class ScrapeQuotes:
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(options=chrome_options)
         self.driver.get(self.url)
-        time.sleep(1)
-        print(f"--- driver initialized in {self.driver.current_url}")
+
 
     def _get_soup_content(self, url):
         page = requests.get(url)
@@ -43,12 +42,10 @@ class ScrapeQuotes:
         try:
             next_button = self.driver.find_element_by_class_name("next")
         except Exception:
-            print("not found")
             return False
         else:
-            print("button found")
             a = next_button.find_elements_by_css_selector("*")
-            a.click()
+            a[0].click()
             self.url = self.driver.current_url
             return True
 
@@ -81,6 +78,7 @@ class ScrapeQuotes:
         Scrape all quotes from the website by navigating through all the pages.
         Store all the data obtained into a Pandas dataframe and returns it.
         """
+        self._init_driver()
         print(f"Starting scrapping {self.url}")
         self._get_top_tags()
         self._get_quotes()
