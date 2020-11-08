@@ -4,6 +4,8 @@
 
 Esta práctica se ha realizado siguiendo el contenido de la assignatura _Tipología y ciclo de vida de los datos_ del M.Sc de Data Science por la [UOC](https://www.uoc.edu)
 
+La descripción detallada del resultado de la práctica se puede encontrar en el pdf que se encuentra en la carpeta **/pdf/**
+
 ## Team
 
 Esta práctica ha sido desarrollada individualmente por Sergi Alonso Badia.
