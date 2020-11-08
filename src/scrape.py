@@ -6,18 +6,15 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class ScrapeQuotes: 
-    """
-    Scrappe main class to get a dataset from quotes.toscrape.com site.
-    """
 
     def __init__(self):
         self.url = "http://quotes.toscrape.com/"
         self.driver = self._init_driver()
         self.data = pd.DataFrame()
         self.top_tags = []
-
 
     def _init_driver(self):
         # selenium driver to interact with the website
@@ -28,11 +25,9 @@ class ScrapeQuotes:
         time.sleep(1)
         print(f"--- driver initialized in {self.driver.current_url}")
 
-
     def _get_soup_content(self, url):
         page = requests.get(url)
-        return BeautifulSoup(page.content, 'html.parser')
-
+        return BeautifulSoup(page.content, "html.parser")
 
     def _get_top_tags(self):
         """
@@ -42,14 +37,13 @@ class ScrapeQuotes:
         top_tags = soup.find("h2", text="Top Ten tags").parent
         self.top_tags = [tag.text.strip() for tag in top_tags.find_all("span")]
 
-
     def _navigate_next_page(self):
         """
         Navigates to the next page using the "next" button on it.
         Returns false if its the last page of the website.
         """
         try:
-            WebDriverWait(self.driver, 3)
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "next")))
             next_button = self.driver.find_element_by_class_name("next")
         except Exception:
             print("not found")
@@ -61,7 +55,6 @@ class ScrapeQuotes:
             self.url = self.driver.current_url
             return True
 
-
     def _is_top_tag(self, tags):
         """
         Evaluates if the given tags are on the top ten tags ranking.
@@ -70,7 +63,6 @@ class ScrapeQuotes:
             if tag in self.top_tags:
                 return True
         return False
-
 
     def _get_quotes(self):
         """
@@ -83,12 +75,12 @@ class ScrapeQuotes:
             text = quote.find("span", itemprop="text").text
             author = quote.find("small", "author").text
             tags = [tag.text for tag in quote.find_all("a", class_="tag")]
-            author_about = "http://quotes.toscrape.com" +\
-                quote.find("a", text="(about)")['href']
+            author_about = (
+                "http://quotes.toscrape.com" + quote.find("a", text="(about)")['href']
+            )
             
             row = pd.Series([author, text, tags, author_about, self._is_top_tag(tags)])
             self.data = self.data.append(row, ignore_index=True)
-
 
     def scrape(self):
         """
@@ -97,12 +89,10 @@ class ScrapeQuotes:
         """
         print(f"Starting scrapping {self.url}")
         self._get_top_tags()
-        
         self._get_quotes()
-        while(self._navigate_next_page()):
+        while self._navigate_next_page():
             self._get_quotes()
             print(f"scrapping...{self.url}")
-
 
     def to_csv(self, filename):
         """
