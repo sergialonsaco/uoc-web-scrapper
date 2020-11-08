@@ -1,11 +1,8 @@
-import time
-
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
 
 class ScrapeQuotes: 
     def __init__(self):
@@ -20,7 +17,6 @@ class ScrapeQuotes:
         chrome_options.add_argument("--headless")
         self.driver = webdriver.Chrome(options=chrome_options)
         self.driver.get(self.url)
-
 
     def _get_soup_content(self, url):
         page = requests.get(url)
@@ -44,8 +40,7 @@ class ScrapeQuotes:
         except Exception:
             return False
         else:
-            a = next_button.find_elements_by_css_selector("*")
-            a[0].click()
+            next_button.find_elements_by_css_selector("*")[0].click()
             self.url = self.driver.current_url
             return True
 
@@ -68,7 +63,7 @@ class ScrapeQuotes:
             author = quote.find("small", "author").text
             tags = [tag.text for tag in quote.find_all("a", class_="tag")]
             author_about = (
-                "http://quotes.toscrape.com" + quote.find("a", text="(about)")['href']
+                "http://quotes.toscrape.com" + quote.find("a", text="(about)")["href"]
             )
             row = pd.Series([author, text, tags, author_about, self._is_top_tag(tags)])
             self.data = self.data.append(row, ignore_index=True)
@@ -79,12 +74,10 @@ class ScrapeQuotes:
         Store all the data obtained into a Pandas dataframe and returns it.
         """
         self._init_driver()
-        print(f"Starting scrapping {self.url}")
         self._get_top_tags()
         self._get_quotes()
         while self._navigate_next_page():
             self._get_quotes()
-            print(f"scrapping...{self.url}")
 
     def to_csv(self, filename):
         """
